@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ping pong</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+            background: #ffc;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+        integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <canvas id="quadro" width="600" height="600"></canvas>
+    
+    <script>
+        $(document).ready(function () {
+            var canvas = $("#quadro")[0];
+            var ctx = canvas.getContext("2d");
+            var velocidade = 10;
+            //  bola
+             var bola = {
+                x: 300,
+                y: 300,
+                largura: 20,
+                altura: 20,
+                vx: 4,
+                vy: 4,
+                cor: "black",
+                atualiza: function() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    // colisão com teto e chão
+                    if (this.y <= 0) {
+                        this.y = 0;
+                        this.vy = -this.vy;
+                    }
+                    if (this.y + this.altura >= canvas.height) {
+                        this.y = canvas.height - this.altura;
+                        this.vy = -this.vy;
+                    }
+
+                    // Se a bola sair pelas laterais, ela reinicia no centro
+                    if (this.x < 0 || this.x > canvas.width) {
+                        this.x = canvas.width / 2 - this.largura / 2;
+                        this.y = canvas.height / 2 - this.altura / 2;
+                        this.vx = -this.vx; //muda o lado do proximo round se alguem fizer ponto 
+                    }
+                },
+                desenha: function() {
+                    ctx.fillStyle = this.cor;
+                    ctx.fillRect(this.x, this.y, this.largura, this.altura);
+                }
+            };
+           
+            function colisao(bola, raquete) {
+                var t1 = bola.y;
+                var t2 = raquete.y;
+                var e1 = bola.x;
+                var e2 = raquete.x;
+                
+                var b1 = bola.y + bola.altura;     // altura da bola
+                var b2 = raquete.y + 100;          // altura da raquete
+                var d1 = bola.x + bola.largura;    // largura da bola
+                var d2 = raquete.x + 20;           // largura da raquete
+
+                if (b1 > t2 && t1 < b2 && d2 > e1 && e2 < d1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+           
+            var raquete1 = {
+                x: 20,
+                y: 250,
+                vy: velocidade,
+                cor: "red",
+                desenha: function () {
+                    ctx.fillStyle = this.cor;
+                    ctx.fillRect(this.x, this.y, 20, 100);
+                }
+            };
+
+            var raquete2 = {
+                x: 560,
+                y: 250,
+                vy: velocidade,
+                cor: "red",
+                desenha: function () {
+                    ctx.fillStyle = this.cor;
+                    ctx.fillRect(this.x, this.y, 20, 100);
+                }
+            };
+        
+            function animacao() {
+                limpar(); 
+                
+                // atualiza e desenha a bola
+                bola.atualiza();
+                bola.desenha();
+
+                // desenha as raquetes
+                raquete1.desenha();
+                raquete2.desenha();
+                
+                //  colisões da bola com as raquetes
+                if (colisao(bola, raquete1)) {
+                    bola.vx = Math.abs(bola.vx); // rebate para a direita
+                    bola.x = raquete1.x + 20;   
+                }
+                if (colisao(bola, raquete2)) {
+                    bola.vx = -Math.abs(bola.vx); // rebate para a esquerda
+                    bola.x = raquete2.x - bola.largura;
+                }
+
+                // limites das raquetes
+                if(raquete1.y <= 0){
+                    raquete1.y = 0;
+                }
+                if(raquete1.y + 100 >= canvas.height){
+                    raquete1.y = canvas.height - 100;
+                }
+
+                if(raquete2.y <= 0){
+                    raquete2.y = 0;
+                }
+                if(raquete2.y + 100 >= canvas.height){
+                    raquete2.y = canvas.height - 100;
+                }
+                 
+                frame = requestAnimationFrame(animacao);
+            }
+            animacao();
+
+            function limpar() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Movimentação fluida das raquetes
+            $(document).keydown(function (event) {
+                // Jogador 1 (W e S)
+                if (event.which == 87) { // W
+                    raquete1.y -= velocidade;
+                }
+                if (event.which == 83) { // S
+                    raquete1.y += velocidade;
+                }
+                
+                // segundo jogador setas cima e baixo
+                if(event.which == 38) { // cima
+                    raquete2.y -= velocidade;
+                }
+                if (event.which == 40) { //baixo
+                    raquete2.y += velocidade;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

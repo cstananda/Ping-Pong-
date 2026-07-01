@@ -1,0 +1,128 @@
+
+</style>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping pong</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+        integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <canvas id="quadro" width="600" height="600"></canvas>
+    <script>
+        $(document).ready(function () {
+            var canvas = $("#quadro")[0];
+            var ctx = canvas.getContext("2d");
+            var velocidade = 10;
+           
+          
+            function colisao(q1, q2) {
+                var t1 = q1.y;
+                var t2 = q2.y;
+                var e1 = q1.x;
+                var e2 = q2.x;
+                var b1 = q1.y + 20;
+                var b2 = q2.y + 20;
+                var d1 = q1.x + 20;
+                var d2 = q2.x + 20;
+                if (b1 > t2 && t1 < b2 && d2 > e1 && e2 < d1) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            
+           var raquete1 = {
+                    x: 20,
+                    y: 40,
+                    vy: velocidade,
+                    cor: "red",
+                    atualiza: function () {
+                        this.y += this.vy;
+                    },
+                    desenha: function () {
+                        ctx.fillStyle = this.cor
+                        ctx.fillRect(this.x,this.y,20,100);
+                    }
+            }
+
+                  var raquete2 = {
+                    x: 560,
+                    y: 40,
+                    vy: velocidade,
+                    cor: "red",
+                    atualiza: function () {
+                        this.y += this.vy;
+                    },
+                    desenha: function () {
+                        ctx.fillStyle = this.cor
+                        ctx.fillRect(this.x,this.y,20,100);
+                    }
+            }
+
+
+        
+            function animacao() {
+               
+                  limpar(); 
+                        raquete1.desenha();
+                        raquete2.desenha();
+                  
+                  
+
+                 if(raquete1.y <= 0){
+                    raquete1.y = 0;
+                 }
+                 if(raquete1.y + 100 >= canvas.height){
+                    raquete1.y = canvas.height - 100;
+                 }
+
+                   if(raquete2.y <= 0){
+                    raquete2.y = 0;
+                 }
+                 if(raquete2.y + 100 >= canvas.height){
+                    raquete2.y = canvas.height - 100;
+                 }
+                 
+                 
+                frame = requestAnimationFrame(animacao);
+            }
+            animacao();
+
+            function limpar() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            $(document).keydown(function (event) {
+                //cima2
+                if (event.which == 87) {
+                        raquete1.vy = -velocidade;
+                         raquete1.y += raquete1.vy;
+
+                }
+                //baixo2
+                if (event.which == 83) {
+                        raquete1.vy = velocidade;
+                         raquete1.y += raquete1.vy;
+                    }
+                //cima
+                if(event.which == 38) {
+                       raquete2.vy = -velocidade;
+                        raquete2.y += raquete2.vy;
+                    }
+                //baixo
+                if (event.which == 40) {
+                        raquete2.vy = velocidade;
+                         raquete2.y += raquete2.vy;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
