@@ -30,8 +30,8 @@
                 y: 300,
                 largura: 15,
                 altura: 20,
-                vx: 4,
-                vy: 4,
+                vx: 3,
+                vy: 3,
                 cor: "black",
                 atualiza: function() {
                     this.x += this.vx;
@@ -48,10 +48,17 @@
                     }
 
                     // Se a bola sair pelas laterais, ela reinicia no centro
-                    if (this.x < 0 || this.x > canvas.width) {
+                    if (this.x < 0) {
                         this.x = canvas.width / 2 - this.largura / 2;
                         this.y = canvas.height / 2 - this.altura / 2;
-                        this.vx = -this.vx; //mudar o lado 
+                        this.vx = -this.vx; //mudar o lado
+                        ponto2++; 
+                    }
+                    if(this.x > canvas.width){
+                        this.x = canvas.width / 2 - this.largura / 2;
+                        this.y = canvas.height / 2 - this.altura / 2;
+                        this.vx = -this.vx; //mudar o lado
+                        ponto1++;
                     }
                 },
                 desenha: function() {
@@ -64,7 +71,14 @@
                 }
         
             };
-           
+           var ponto1 = 0;
+            var ponto2 = 0;
+            function placar(){
+                ctx.font = "20px Georgia";
+                ctx.fillText(ponto1 + "", canvas.width/4, 30);
+                ctx.fillText(ponto2 + "", 3 * canvas.width/4, 30);
+            }
+
             function colisao(bola, raquete) {
                 var t1 = bola.y;
                 var t2 = raquete.y;
@@ -91,6 +105,9 @@
                 desenha: function () {
                     ctx.fillStyle = this.cor;
                     ctx.fillRect(this.x, this.y, 20, 100);
+                },
+                atualiza: function(){
+                    this.y += this.vy;
                 }
             };
 
@@ -102,24 +119,26 @@
                 desenha: function () {
                     ctx.fillStyle = this.cor;
                     ctx.fillRect(this.x, this.y, 20, 100);
+                },
+                atualiza: function(){
+                    this.y += this.vy;
                 }
             };
         
             function animacao() {
                 limpar(); 
-                
-                // atualiza e desenha a bola
+                placar();
                 bola.atualiza();
                 bola.desenha();
-
-                // desenha as raquetes
                 raquete1.desenha();
                 raquete2.desenha();
+                raquete1.atualiza();
+                raquete2.atualiza();
                 
                 //  colisões da bola com as raquetes
                 if (colisao(bola, raquete1)) {
                     bola.vx = Math.abs(bola.vx); // rebate para a direita
-                    bola.x = raquete1.x + 20;   
+                    bola.x = raquete1.x + 20; 
                 }
                 if (colisao(bola, raquete2)) {
                     bola.vx = -Math.abs(bola.vx); // rebate para a esquerda
@@ -151,17 +170,17 @@
 
             $(document).keydown(function (event) {
                 if (event.which == 87) { 
-                    raquete1.y -= velocidade;
+                    raquete1.vy = -velocidade;
                 }
                 if (event.which == 83) { 
-                    raquete1.y += velocidade;
+                    raquete1.vy = velocidade;
                 }
                 
                 if(event.which == 38) { 
-                    raquete2.y -= velocidade;
+                    raquete2.vy = -velocidade;
                 }
                 if (event.which == 40) { 
-                    raquete2.y += velocidade;
+                    raquete2.vy = velocidade;
                 }
             });
         });
