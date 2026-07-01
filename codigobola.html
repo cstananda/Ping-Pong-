@@ -28,7 +28,7 @@
              var bola = {
                 x: 300,
                 y: 300,
-                largura: 20,
+                largura: 15,
                 altura: 20,
                 vx: 4,
                 vy: 4,
@@ -51,13 +51,18 @@
                     if (this.x < 0 || this.x > canvas.width) {
                         this.x = canvas.width / 2 - this.largura / 2;
                         this.y = canvas.height / 2 - this.altura / 2;
-                        this.vx = -this.vx; //muda o lado do proximo round se alguem fizer ponto 
+                        this.vx = -this.vx; //mudar o lado 
                     }
                 },
                 desenha: function() {
                     ctx.fillStyle = this.cor;
-                    ctx.fillRect(this.x, this.y, this.largura, this.altura);
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.largura, 0, Math.PI * 2); 
+                    ctx.fill();
+                    ctx.closePath();
+                  
                 }
+        
             };
            
             function colisao(bola, raquete) {
@@ -121,7 +126,7 @@
                     bola.x = raquete2.x - bola.largura;
                 }
 
-                // limites das raquetes
+                //limites
                 if(raquete1.y <= 0){
                     raquete1.y = 0;
                 }
@@ -144,21 +149,18 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Movimentação fluida das raquetes
             $(document).keydown(function (event) {
-                // Jogador 1 (W e S)
-                if (event.which == 87) { // W
+                if (event.which == 87) { 
                     raquete1.y -= velocidade;
                 }
-                if (event.which == 83) { // S
+                if (event.which == 83) { 
                     raquete1.y += velocidade;
                 }
                 
-                // segundo jogador setas cima e baixo
-                if(event.which == 38) { // cima
+                if(event.which == 38) { 
                     raquete2.y -= velocidade;
                 }
-                if (event.which == 40) { //baixo
+                if (event.which == 40) { 
                     raquete2.y += velocidade;
                 }
             });
